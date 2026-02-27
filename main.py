@@ -207,75 +207,148 @@ RWA市場は2026年から2027年にかけてさらなる拡大が予想される
 
                 # Note.comへアクセス
                 logger.info('Note.comへアクセス中...')
-                await page.goto('https://note.com', wait_until='networkidle')
+                await page.goto('https://note.com/login', wait_until='networkidle')
+                await page.wait_for_timeout(2000)
 
-                # ログイン処理
+                # ログイン処理（複数のセレクター候補を試す）
                 logger.info('ログイン処理中...')
 
-                # ログインページで「メールアドレスでログイン」を探してクリック
+                # メールアドレス入力
                 try:
-                    # メール/パスワード入力フィールドを直接探す
-                    email_input = page.locator('input[type="email"]')
-                    if await email_input.is_visible():
-                        await email_input.fill(self.note_email)
-                        logger.info('メールアドレスを入力しました')
+                    # 候補1: type="email"
+                    email_inputs = await page.locators('input[type="email"]').all()
+                    if email_inputs:
+                        await email_inputs[0].fill(self.note_email)
+                        logger.info('メールアドレスを入力しました（候補1）')
                     else:
-                        # メール入力ボタンをクリック
-                        await page.click('text=メールアドレスでログイン')
-                        await page.wait_for_timeout(1000)
-                        await page.fill('input[type="email"]', self.note_email)
+                        # 候補2: name属性でメールを探す
+                        email_input = await page.locator('input[name*="email"]').first
+                        await email_input.fill(self.note_email)
+                        logger.info('メールアドレスを入力しました（候補2）')
                 except Exception as e:
-                    logger.warning(f'メール入力エラー: {str(e)}')
+                    logger.warning(f'メール入力失敗: {str(e)}')
+                    raise
+
+                await page.wait_for_timeout(1000)
 
                 # パスワード入力
                 try:
-                    password_input = page.locator('input[type="password"]')
-                    await password_input.fill(self.note_password)
-                    logger.info('パスワードを入力しました')
-
-                    # ログインボタンをクリック
-                    login_button = page.locator('button:has-text("ログイン")')
-                    await login_button.click()
-                    await page.wait_for_url('**/my/timeline', timeout=15000)
+                    password_inputs = await page.locators('input[type="password"]').all()
+                    if password_inputs:
+                        await password_inputs[0].fill(self.note_password)
+                        logger.info('パスワードを入力しました')
+                    else:
+                        raise Exception('パスワード入力フィールドが見つかりません')
                 except Exception as e:
-                    logger.warning(f'パスワード入力エラー: {str(e)}')
+                    logger.warning(f'パスワード入力失敗: {str(e)}')
+                    raise
 
-                logger.info('ログイン成功')
+                await page.wait_for_timeout(500)
+
+                # ログインボタンをクリック（複数候補）
+                try:
+                    # 候補1: "ログイン"テキストを含むボタン
+                    login_buttons = await page.locators('button:has-text("ログイン")').all()
+                    if login_buttons:
+                        await login_buttons[0].click()
+                        logger.info('ログインボタンをクリック（候補1）')
+                    else:
+                        # 候補2: type="submit"のボタン
+                        submit_button = await page.locator('button[type="submit"]').first
+                        await submit_button.click()
+                        logger.info('ログインボタンをクリック（候補2）')
+                except Exception as e:
+                    logger.warning(f'ログインボタン操作失敗: {str(e)}')
+                    raise
+
+                # ログイン完了を待機
+                try:
+                    await page.wait_for_url('**/my/**', timeout=20000)
+                    logger.info('ログイン成功')
+                except Exception as e:
+                    logger.warning(f'ログイン待機タイムアウト: {str(e)}')
+                    # リダイレクトされた先を確認
+                    current_url = page.url
+                    logger.info(f'現在のURL: {current_url}')
+
+                await page.wait_for_timeout(2000)
 
                 # 新規記事作成ページへ移動
                 logger.info('記事作成ページへ移動...')
                 await page.goto('https://note.com/notes/new', wait_until='networkidle')
+                await page.wait_for_timeout(2000)
 
                 # 記事内容を入力
                 logger.info('記事内容を入力中...')
 
-                # タイトル入力フィールドを見つけて入力
-                title = article.split('\n')[0].replace('[タイトル]', '').strip()
-                await page.fill('input[placeholder*="タイトル"]', title[:60])
-
-                # 本文エディタに記事を入力
-                body = article.replace('[タイトル]', '').replace('[見出し]', '').replace('[本文]', '')
-
-                # Rich text editorを探して入力
-                editor = await page.query_selector('div[contenteditable="true"]')
-                if editor:
-                    await editor.fill(body)
-                else:
-                    logger.warning('エディタが見つかりません。テキスト領域を試行中...')
-                    await page.fill('textarea', body)
+                # タイトル入力
+                try:
+                    title = article.split('\n')[0].replace('[タイトル]', '').strip()[:60]
+                    # 候補1: プレースホルダーで検索
+                    title_inputs = await page.locators('input[placeholder*="タイトル"]').all()
+                    if title_inputs:
+                        await title_inputs[0].fill(title)
+                        logger.info(f'タイトルを入力しました: {title}')
+                    else:
+                        # 候補2: すべてのtext input
+                        all_inputs = await page.locators('input[type="text"]').all()
+                        if all_inputs:
+                            await all_inputs[0].fill(title)
+                            logger.info(f'タイトルを入力しました（候補2）: {title}')
+                except Exception as e:
+                    logger.warning(f'タイトル入力失敗: {str(e)}')
 
                 await page.wait_for_timeout(1000)
 
+                # 本文エディタに記事を入力
+                body = article.replace('[タイトル]', '').replace('[見出し]', '').replace('[本文]', '').strip()
+
+                try:
+                    # 候補1: contenteditable div
+                    editor = await page.locator('div[contenteditable="true"]').first
+                    await editor.click()
+                    await editor.press('Control+A')
+                    await editor.type(body, delay=10)
+                    logger.info('本文をエディタに入力しました')
+                except Exception as e:
+                    logger.warning(f'contenteditable エディタ失敗: {str(e)}')
+                    try:
+                        # 候補2: textarea
+                        await page.fill('textarea', body)
+                        logger.info('本文を textarea に入力しました')
+                    except Exception as e2:
+                        logger.warning(f'textarea 入力失敗: {str(e2)}')
+
+                await page.wait_for_timeout(2000)
+
                 # 投稿ボタンをクリック
                 logger.info('投稿中...')
-                await page.click('text=投稿する')
+                try:
+                    # 候補1: "投稿する"テキスト
+                    post_buttons = await page.locators('button:has-text("投稿する")').all()
+                    if post_buttons:
+                        await post_buttons[0].click()
+                        logger.info('投稿ボタンをクリック')
+                    else:
+                        # 候補2: "公開"テキスト
+                        publish_buttons = await page.locators('button:has-text("公開")').all()
+                        if publish_buttons:
+                            await publish_buttons[0].click()
+                            logger.info('公開ボタンをクリック')
+                except Exception as e:
+                    logger.warning(f'投稿ボタン操作失敗: {str(e)}')
+                    raise
 
                 # 投稿完了を待機
-                await page.wait_for_url('**/n/**', timeout=10000)
+                try:
+                    await page.wait_for_url('**/n/**', timeout=15000)
+                    logger.info('Note.comへの投稿成功')
+                except Exception as e:
+                    logger.warning(f'投稿完了待機タイムアウト: {str(e)}')
+                    current_url = page.url
+                    logger.info(f'現在のURL: {current_url}')
 
-                logger.info('Note.comへの投稿成功')
                 await context.close()
-
             return True
 
         except Exception as e:

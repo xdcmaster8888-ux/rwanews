@@ -48,3 +48,6 @@ logs/
 
 # Playwright
 .playwright/
+
+# 生成された記事ファイル
+output/
