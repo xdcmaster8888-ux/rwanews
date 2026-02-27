@@ -2,3 +2,4 @@ pytrends
 playwright
 google-generativeai
 python-dotenv
+Pillow
