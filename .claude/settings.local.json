@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git:*)",
+      "Bash(choco install:*)",
+      "Bash(pip install:*)",
+      "Bash(playwright install:*)",
+      "Bash(python:*)",
+      "Bash(python3:*)",
+      "WebSearch",
+      "WebFetch(domain:note.com)",
+      "WebFetch(domain:www.help-note.com)",
+      "Bash(gh:*)",
+      "Bash(ls:*)"
+    ]
+  }
+}

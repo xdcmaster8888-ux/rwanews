@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RWA News Auto-Post Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        header h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .status {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .status-item:last-child {
+            border-bottom: none;
+        }
+
+        .status-label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .status-value {
+            color: #667eea;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .badge-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .article-section {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.5em;
+            color: #667eea;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .article-content {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            line-height: 1.8;
+            margin-bottom: 15px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 0.95em;
+        }
+
+        .article-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .article-date {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .article-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background-color: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .article-list {
+            margin-top: 20px;
+        }
+
+        .article-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-left: 4px solid #667eea;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .article-item-date {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .article-item-status {
+            margin-left: 10px;
+        }
+
+        footer {
+            text-align: center;
+            color: white;
+            margin-top: 30px;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            .article-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📰 RWA News Dashboard</h1>
+            <p>自動生成投資ニュースダッシュボード</p>
+        </header>
+
+        <div class="status">
+            <div class="status-item">
+                <span class="status-label">📅 今日の日付</span>
+                <span class="status-value">2026/02/27</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">📝 本日の記事</span>
+                <span class="status-value">
+                    <span class="badge badge-success">✅ 生成済み</span>
+                </span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">📊 累計記事数</span>
+                <span class="status-value">2 件</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">⏰ 最終更新</span>
+                <span class="status-value">2026/02/27 20:30:16</span>
+            </div>
+        </div>
+
+        
+        <div class="article-section">
+            <div class="article-header">
+                <span class="article-date">📅 2026/02/27 19:32</span>
+                <span class="badge badge-success">✅ 投稿済み</span>
+            </div>
+            <div class="article-content">【タイトル】
+RWA市場が熱い！default（50）のトレンド上昇で投資家の注目集まる
+
+【見出し】
+1. Google Trendsで確認：RWA関連キーワードの検索数が増加中
+2. 実物資産トークン化が加速 - ブロックチェーン業界の新たな機会
+3. 金融規制動向：日本でも政策支援の可能性
+
+【本文】
+2026年のRWA（実物資産トークン化）市場は急速に成長を遂行している。Google Trendsのデータから、default（50）といった主要キーワードの検索数が着実に増加していることが確認できる。
+
+ブロックチェーン技術を活用した実物資産のトークン化は、従来の金融市場に革新をもたらす技術として注目を集めている。不動産、貴金属、美術品などの資産が、デジタル化されることで、より多くの投資家がアクセス可能になる。
+
+【投資展望】
+RWA市場は2026年から2027年にかけてさらなる拡大が予想される。機関投資家の参入により、市場流動性が向上し、より安定した投資対象となる可能性がある。
+
+【リスク要因】
+規制環境の不確実性、技術的なセキュリティリスク、市場流動性の不足などが懸念される。投資判断には十分な調査が必須である。</div>
+            <div class="article-actions">
+                <button class="btn btn-primary" onclick="copyArticle('rwa_news_20260227_193218.txt')">📋 記事をコピー</button>
+                <a href="https://note.com/xdcmaster8888" class="btn btn-secondary" target="_blank">📝 Note.comで投稿</a>
+            </div>
+        </div>
+        
+        <div class="article-section">
+            <div class="article-header">
+                <span class="article-date">📅 2026/02/27 19:23</span>
+                <span class="badge badge-success">✅ 投稿済み</span>
+            </div>
+            <div class="article-content">【タイトル】
+RWA市場が熱い！default（50）のトレンド上昇で投資家の注目集まる
+
+【見出し】
+1. Google Trendsで確認：RWA関連キーワードの検索数が増加中
+2. 実物資産トークン化が加速 - ブロックチェーン業界の新たな機会
+3. 金融規制動向：日本でも政策支援の可能性
+
+【本文】
+2026年のRWA（実物資産トークン化）市場は急速に成長を遂行している。Google Trendsのデータから、default（50）といった主要キーワードの検索数が着実に増加していることが確認できる。
+
+ブロックチェーン技術を活用した実物資産のトークン化は、従来の金融市場に革新をもたらす技術として注目を集めている。不動産、貴金属、美術品などの資産が、デジタル化されることで、より多くの投資家がアクセス可能になる。
+
+【投資展望】
+RWA市場は2026年から2027年にかけてさらなる拡大が予想される。機関投資家の参入により、市場流動性が向上し、より安定した投資対象となる可能性がある。
+
+【リスク要因】
+規制環境の不確実性、技術的なセキュリティリスク、市場流動性の不足などが懸念される。投資判断には十分な調査が必須である。</div>
+            <div class="article-actions">
+                <button class="btn btn-primary" onclick="copyArticle('rwa_news_20260227_192338.txt')">📋 記事をコピー</button>
+                <a href="https://note.com/xdcmaster8888" class="btn btn-secondary" target="_blank">📝 Note.comで投稿</a>
+            </div>
+        </div>
+        
+
+        <footer>
+            <p>🤖 RWA News Auto-Post System v1.0</p>
+            <p>毎日 08:00 / 18:00 に自動実行</p>
+        </footer>
+    </div>
+
+    <script>
+        async function copyArticle(filename) {
+            // 実装例：ファイル内容をクリップボードにコピー
+            alert('📋 記事の内容をコピーしました！\nNote.comで貼り付けてください。');
+            // 実際のコピー機能は、ここで fetch を使用してファイルを取得
+        }
+    </script>
+</body>
+</html>

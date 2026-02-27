@@ -1,0 +1,4 @@
+pytrends
+playwright
+google-generativeai
+python-dotenv
