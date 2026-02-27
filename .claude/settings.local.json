@@ -11,7 +11,22 @@
       "WebFetch(domain:note.com)",
       "WebFetch(domain:www.help-note.com)",
       "Bash(gh:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "WebFetch(domain:xdcmaster8888-ux.github.io)",
+      "Bash(file:*)",
+      "Bash(\"C:/Users/yuji/rwanews/debug_note_selectors.py\":*)",
+      "Bash(\"C:/Users/yuji/rwanews/debug_detailed_selectors.py\":*)",
+      "Bash(\"C:/Users/yuji/rwanews/debug_article_creation.py\":*)",
+      "Bash(\"C:/Users/yuji/rwanews/debug_body_selector.py\":*)",
+      "Bash(\"C:/Users/yuji/rwanews/verify_note_posting.py\":*)",
+      "Bash(\"C:/Users/yuji/rwanews/verify_posting_via_menu.py\":*)",
+      "Bash(\"C:/Users/yuji/rwanews/debug_publish_button.py\":*)",
+      "Bash(\"C:/Users/yuji/rwanews/debug_publish_page.py\":*)",
+      "Bash(\"C:/Users/yuji/rwanews/final_verification.py\":*)",
+      "Bash(xargs -I {} sh -c 'echo \"\"📄 最新記事ファイル: {}\"\" && head -80 \"\"{}\"\"')",
+      "Bash(\"C:/Users/yuji/rwanews/verify_posting_final.py\":*)",
+      "Bash(tail:*)",
+      "Bash(find:*)"
     ]
   }
 }

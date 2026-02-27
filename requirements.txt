@@ -3,3 +3,4 @@ playwright
 google-generativeai
 python-dotenv
 Pillow
+requests
