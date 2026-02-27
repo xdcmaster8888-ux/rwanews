@@ -392,60 +392,74 @@ xdc.master：不動産運営経験を持ちながら、XDC（XinFin）等のエ�
             async with async_playwright() as p:
                 browser = await p.chromium.launch(
                     headless=True,
-                    args=['--no-sandbox', '--disable-setuid-sandbox']
+                    args=['--no-sandbox', '--disable-setuid-sandbox', '--disable-blink-features=AutomationControlled']
                 )
                 context = await browser.new_context(
                     locale='ja-JP',
-                    timezone_id='Asia/Tokyo'
+                    timezone_id='Asia/Tokyo',
+                    user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
                 )
                 page = await context.new_page()
 
                 # Note.com ログインページへアクセス
                 logger.info('Note.comへアクセス中...')
-                await page.goto('https://note.com/login', wait_until='networkidle')
-                await page.wait_for_timeout(2000)
+                await page.goto('https://note.com/login', wait_until='domcontentloaded')
+                await page.wait_for_timeout(5000)  # より長く待機
 
-                # ログイン処理
+                # ログイン処理（タイムアウト60秒に設定）
                 logger.info('ログイン処理中...')
+                page.set_default_timeout(60000)
+
                 try:
-                    # メールアドレス入力（複数候補対応）
-                    email_input = page.locator('input[type="email"]')
-                    await email_input.fill(self.note_email)
+                    # メールアドレス入力（セレクター: #email）
+                    logger.info('メールアドレスフィールドを待機中...')
+                    await page.wait_for_selector('#email', timeout=60000)
+                    email_input = page.locator('#email')
+                    await email_input.fill(self.note_email, timeout=5000)
                     logger.info('メールアドレスを入力しました')
                 except Exception as e:
-                    logger.warning(f'メール入力失敗: {str(e)}')
+                    logger.error(f'メール入力失敗: {str(e)}')
+                    # スクリーンショットでデバッグ
+                    await page.screenshot(path='output/note_email_debug.png')
+                    raise
+
+                await page.wait_for_timeout(2000)
+
+                # パスワード入力（セレクター: #password）
+                try:
+                    logger.info('パスワードフィールドを待機中...')
+                    await page.wait_for_selector('#password', timeout=60000)
+                    password_input = page.locator('#password')
+                    await password_input.fill(self.note_password, timeout=5000)
+                    logger.info('パスワードを入力しました')
+                except Exception as e:
+                    logger.error(f'パスワード入力失敗: {str(e)}')
+                    await page.screenshot(path='output/note_password_debug.png')
                     raise
 
                 await page.wait_for_timeout(1000)
 
-                # パスワード入力
+                # ログインボタンをクリック
                 try:
-                    password_input = page.locator('input[type="password"]')
-                    await password_input.fill(self.note_password)
-                    logger.info('パスワードを入力しました')
-                except Exception as e:
-                    logger.warning(f'パスワード入力失敗: {str(e)}')
-                    raise
+                    logger.info('ログインボタンをクリック中...')
+                    # button:has-text("ログイン") で確実にクリック
+                    await page.click('button:has-text("ログイン")', timeout=5000)
+                    logger.info('✅ ログインボタンをクリック')
 
-                await page.wait_for_timeout(500)
-
-                # ログインボタンをクリック（複数候補対応）
-                try:
-                    try:
-                        await page.click('button:has-text("ログイン")')
-                        logger.info('ログインボタンをクリック')
-                    except:
-                        await page.click('button[type="submit"]')
-                        logger.info('送信ボタンをクリック')
                 except Exception as e:
-                    logger.warning(f'ログインボタン操作失敗: {str(e)}')
+                    logger.error(f'ログインボタン操作失敗: {str(e)}')
+                    await page.screenshot(path='output/note_button_debug.png')
                     raise
 
                 try:
-                    await page.wait_for_url('**/my/**', timeout=20000)
-                    logger.info('ログイン成功')
+                    logger.info('ログイン完了を待機中（タイムアウト: 60秒）...')
+                    await page.wait_for_url('**/my/**', timeout=60000)
+                    logger.info('✅ ログイン成功')
                 except Exception as e:
-                    logger.warning(f'ログイン完了確認失敗: {str(e)}')
+                    logger.warning(f'ログイン完了確認タイムアウト: {str(e)}')
+                    current_url = page.url
+                    logger.info(f'現在のURL: {current_url}')
+                    # 例外を発生させずに続行
 
                 await page.wait_for_timeout(2000)
 
