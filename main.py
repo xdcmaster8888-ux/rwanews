@@ -408,10 +408,10 @@ xdc.master：不動産運営経験を持ちながら、XDC（XinFin）等のエ�
                 # ログイン処理
                 logger.info('ログイン処理中...')
                 try:
-                    email_inputs = await page.locators('input[type="email"]').all()
-                    if email_inputs:
-                        await email_inputs[0].fill(self.note_email)
-                        logger.info('メールアドレスを入力しました')
+                    # メールアドレス入力（複数候補対応）
+                    email_input = page.locator('input[type="email"]')
+                    await email_input.fill(self.note_email)
+                    logger.info('メールアドレスを入力しました')
                 except Exception as e:
                     logger.warning(f'メール入力失敗: {str(e)}')
                     raise
@@ -420,25 +420,23 @@ xdc.master：不動産運営経験を持ちながら、XDC（XinFin）等のエ�
 
                 # パスワード入力
                 try:
-                    password_inputs = await page.locators('input[type="password"]').all()
-                    if password_inputs:
-                        await password_inputs[0].fill(self.note_password)
-                        logger.info('パスワードを入力しました')
+                    password_input = page.locator('input[type="password"]')
+                    await password_input.fill(self.note_password)
+                    logger.info('パスワードを入力しました')
                 except Exception as e:
                     logger.warning(f'パスワード入力失敗: {str(e)}')
                     raise
 
                 await page.wait_for_timeout(500)
 
-                # ログインボタンをクリック
+                # ログインボタンをクリック（複数候補対応）
                 try:
-                    login_buttons = await page.locators('button:has-text("ログイン")').all()
-                    if login_buttons:
-                        await login_buttons[0].click()
-                    else:
-                        submit_buttons = await page.locators('button[type="submit"]').all()
-                        if submit_buttons:
-                            await submit_buttons[0].click()
+                    try:
+                        await page.click('button:has-text("ログイン")')
+                        logger.info('ログインボタンをクリック')
+                    except:
+                        await page.click('button[type="submit"]')
+                        logger.info('送信ボタンをクリック')
                 except Exception as e:
                     logger.warning(f'ログインボタン操作失敗: {str(e)}')
                     raise
@@ -462,10 +460,9 @@ xdc.master：不動産運営経験を持ちながら、XDC（XinFin）等のエ�
                 title = article.split('\n')[0].replace('[タイトル]', '').strip()[:60]
 
                 try:
-                    title_inputs = await page.locators('input[placeholder*="タイトル"]').all()
-                    if title_inputs:
-                        await title_inputs[0].fill(title)
-                        logger.info(f'タイトルを入力: {title}')
+                    title_input = page.locator('input[placeholder*="タイトル"]')
+                    await title_input.fill(title)
+                    logger.info(f'タイトルを入力: {title}')
                 except Exception as e:
                     logger.warning(f'タイトル入力失敗: {str(e)}')
 
@@ -475,10 +472,10 @@ xdc.master：不動産運営経験を持ちながら、XDC（XinFin）等のエ�
                 body = article.replace('[タイトル]', '').replace('[見出し]', '').replace('[本文]', '').strip()
 
                 try:
-                    editor = await page.locator('div[contenteditable="true"]').first
+                    editor = page.locator('div[contenteditable="true"]')
                     await editor.click()
-                    await editor.press('Control+A')
-                    await editor.type(body, delay=5)
+                    await page.keyboard.press('Control+A')
+                    await editor.type(body, delay=2)
                     logger.info('本文をエディタに入力しました')
                 except Exception as e:
                     logger.warning(f'contenteditable エディタ失敗: {str(e)}')
@@ -497,13 +494,17 @@ xdc.master：不動産運営経験を持ちながら、XDC（XinFin）等のエ�
                 # 投稿ボタンをクリック
                 logger.info('投稿中...')
                 try:
-                    post_buttons = await page.locators('button:has-text("投稿する")').all()
-                    if post_buttons:
-                        await post_buttons[0].click()
-                    else:
-                        publish_buttons = await page.locators('button:has-text("公開")').all()
-                        if publish_buttons:
-                            await publish_buttons[0].click()
+                    try:
+                        await page.click('button:has-text("投稿する")')
+                        logger.info('投稿ボタンをクリック')
+                    except:
+                        try:
+                            await page.click('button:has-text("公開")')
+                            logger.info('公開ボタンをクリック')
+                        except:
+                            # 最後の手段：最後のボタンをクリック
+                            await page.click('button:last-of-type')
+                            logger.info('最後のボタンをクリック')
                 except Exception as e:
                     logger.warning(f'投稿ボタン操作失敗: {str(e)}')
                     raise
