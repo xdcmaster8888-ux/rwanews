@@ -26,7 +26,10 @@
       "Bash(xargs -I {} sh -c 'echo \"\"📄 最新記事ファイル: {}\"\" && head -80 \"\"{}\"\"')",
       "Bash(\"C:/Users/yuji/rwanews/verify_posting_final.py\":*)",
       "Bash(tail:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(start:*)",
+      "Bash(/c/Users/yuji/rwanews/generate_html_with_images.py:*)",
+      "Bash(cp:*)"
     ]
   }
 }
