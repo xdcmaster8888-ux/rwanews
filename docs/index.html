@@ -53,6 +53,45 @@
             font-size: 0.95em;
         }
 
+        /* Institutional Heat Map */
+        .heat-map {
+            background: rgba(100, 181, 246, 0.1);
+            border: 1px solid #64b5f6;
+            padding: 12px 20px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .heat-map-label {
+            color: #90a4ae;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .heat-map-bar {
+            width: 150px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #64b5f6;
+        }
+
+        .heat-map-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b6b 0%, #ffd93d 50%, #6bcf7f 100%);
+            transition: width 0.8s ease;
+        }
+
+        .heat-map-score {
+            color: #64b5f6;
+            font-weight: bold;
+            font-size: 1.1em;
+            min-width: 50px;
+        }
+
         .container {
             max-width: 1600px;
             margin: 0 auto;
@@ -99,13 +138,27 @@
             font-weight: bold;
             font-size: 1.2em;
             color: #64b5f6;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .token-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 0.65em;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: 700;
+            white-space: nowrap;
+            letter-spacing: 0.5px;
         }
 
         .token-category {
             font-size: 0.85em;
             color: #90a4ae;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
         }
 
         .token-change {
@@ -115,15 +168,26 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            background: rgba(76, 175, 80, 0.15);
+            padding: 8px 12px;
+            border-radius: 6px;
+            border-left: 3px solid #4caf50;
         }
 
         .token-change.negative {
             color: #ff7043;
+            background: rgba(255, 112, 67, 0.15);
+            border-left-color: #ff7043;
         }
 
         .change-arrow {
             font-size: 1.5em;
             font-weight: bold;
+        }
+
+        .change-value {
+            font-weight: 700;
+            letter-spacing: 0.5px;
         }
 
         /* 出典セクション */
@@ -160,6 +224,39 @@
         .source-link:hover {
             background: rgba(100, 181, 246, 0.4);
             transform: translateY(-2px);
+        }
+
+        /* 主要参照元セクション */
+        .primary-sources {
+            background: rgba(100, 181, 246, 0.08);
+            border-top: 2px solid #64b5f6;
+            padding-top: 15px;
+            margin-top: 15px;
+        }
+
+        .primary-sources-label {
+            color: #64b5f6;
+            font-size: 0.85em;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .primary-sources-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .source-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 0.85em;
+            font-weight: 600;
+            white-space: nowrap;
         }
 
         /* MAIN CONTENT: ニュース記事 */
@@ -376,6 +473,13 @@
     <div class="header">
         <div class="header-inner">
             <h1>📊 RWA News - ファンダメンタルズ分析</h1>
+            <div class="heat-map">
+                <div class="heat-map-label">機関投資家熱量</div>
+                <div class="heat-map-bar">
+                    <div class="heat-map-fill" id="heat-map-fill" style="width: 0%"></div>
+                </div>
+                <div class="heat-map-score" id="heat-score">0%</div>
+            </div>
             <div class="header-time" id="current-time">2026年2月28日 09:15 JST</div>
         </div>
     </div>
@@ -385,29 +489,44 @@
         <div class="sidebar">
             <h2>注目の RWA 銘柄</h2>
             <div class="token-item">
-                <div class="token-symbol">ONDO</div>
+                <div class="token-symbol">
+                    ONDO
+                    <span class="token-badge">Gov Bond</span>
+                </div>
                 <div class="token-category">Treasury</div>
-                <div class="token-change"><span class="change-arrow">⬆️</span> +12.5%</div>
+                <div class="token-change"><span class="change-arrow">⬆️</span> <span class="change-value">+12.5%</span></div>
             </div>
             <div class="token-item">
-                <div class="token-symbol">XDC</div>
+                <div class="token-symbol">
+                    XDC
+                    <span class="token-badge">Trade Fin</span>
+                </div>
                 <div class="token-category">Trade Finance</div>
-                <div class="token-change"><span class="change-arrow">⬆️</span> +8.3%</div>
+                <div class="token-change"><span class="change-arrow">⬆️</span> <span class="change-value">+8.3%</span></div>
             </div>
             <div class="token-item">
-                <div class="token-symbol">MANTRA</div>
+                <div class="token-symbol">
+                    MANTRA
+                    <span class="token-badge">Infra</span>
+                </div>
                 <div class="token-category">Infrastructure</div>
-                <div class="token-change"><span class="change-arrow">⬆️</span> +5.7%</div>
+                <div class="token-change"><span class="change-arrow">⬆️</span> <span class="change-value">+5.7%</span></div>
             </div>
             <div class="token-item">
-                <div class="token-symbol">USDY</div>
-                <div class="token-category">Yield</div>
-                <div class="token-change"><span class="change-arrow">⬆️</span> +3.2%</div>
+                <div class="token-symbol">
+                    USDY
+                    <span class="token-badge">Yield</span>
+                </div>
+                <div class="token-category">Yield-Bearing</div>
+                <div class="token-change"><span class="change-arrow">⬆️</span> <span class="change-value">+3.2%</span></div>
             </div>
             <div class="token-item">
-                <div class="token-symbol">CENTRIFUGE</div>
-                <div class="token-category">Credit</div>
-                <div class="token-change"><span class="change-arrow">⬆️</span> +2.1%</div>
+                <div class="token-symbol">
+                    CENTRIFUGE
+                    <span class="token-badge">Credit</span>
+                </div>
+                <div class="token-category">Credit Protocol</div>
+                <div class="token-change"><span class="change-arrow">⬆️</span> <span class="change-value">+2.1%</span></div>
             </div>
         </div>
 
@@ -506,6 +625,16 @@
                     <a href="https://coindesk.com" target="_blank" class="source-link">CoinDesk</a>
                     <a href="https://messari.io" target="_blank" class="source-link">Messari</a>
                 </div>
+
+                <!-- 主要参照元バッジ -->
+                <div class="primary-sources">
+                    <div class="primary-sources-label">主要参照元</div>
+                    <div class="primary-sources-list">
+                        <span class="source-badge">Blockworks</span>
+                        <span class="source-badge">CoinDesk</span>
+                        <span class="source-badge">Messari</span>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -566,9 +695,44 @@
             document.getElementById('current-time').textContent = timeStr + ' JST';
         }
 
+        // 機関投資家熱量スコア（動的計算）
+        function calculateInstituationalHeatMap() {
+            // 基本スコア（ファンダメンタルズ強気）
+            let score = 65;
+
+            // 記事内の「機関投資家」キーワードの出現回数で加算
+            const articleText = document.querySelector('.main-content').innerText;
+            const institutionalMatches = (articleText.match(/機関投資家/g) || []).length;
+            score += Math.min(institutionalMatches * 3, 15);
+
+            // 銘柄の上昇率で加算
+            const positiveTokens = document.querySelectorAll('.token-change:not(.negative)').length;
+            score += positiveTokens * 3;
+
+            // 規制クリアのポジティブサイン
+            if (articleText.includes('規制')) score += 8;
+            if (articleText.includes('承認')) score += 5;
+            if (articleText.includes('ガイダンス')) score += 5;
+
+            // 最大100に制限
+            score = Math.min(Math.max(score, 0), 100);
+
+            return Math.round(score);
+        }
+
+        // Heat Map を更新
+        function updateHeatMap() {
+            const score = calculateInstituationalHeatMap();
+            document.getElementById('heat-score').textContent = score + '%';
+            document.getElementById('heat-map-fill').style.width = score + '%';
+        }
+
         // 初期表示と毎秒更新
         updateTime();
         setInterval(updateTime, 1000);
+
+        // Heat Map 初期化
+        setTimeout(updateHeatMap, 500);
     </script>
 </body>
 </html>
