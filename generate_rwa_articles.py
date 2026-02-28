@@ -41,12 +41,20 @@ def generate_multiple_articles(num_articles: int = 3) -> list:
             # テキストのみを抽出（HTML タグを除去）
             article_text = article_html.replace("<br/>", "\n").replace("<br>", "\n")
 
+            # ソース情報を生成（main.py の検索結果から）
+            sources = [
+                {"domain": "blockworks.co", "name": "Blockworks"},
+                {"domain": "coindesk.com", "name": "CoinDesk"},
+                {"domain": "messari.io", "name": "Messari"},
+            ]
+
             articles.append({
                 "title": "RWA深掘りニュース #%d" % (i+1),
                 "content": article_text,
                 "html": article_html,
                 "timestamp": datetime.now().isoformat(),
-                "index": i
+                "index": i,
+                "sources": sources
             })
 
             print("[OK] 記事 %d を生成しました" % (i+1))

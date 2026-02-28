@@ -109,13 +109,57 @@
         }
 
         .token-change {
-            font-size: 1em;
+            font-size: 1.3em;
             font-weight: bold;
             color: #4caf50;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .token-change.negative {
             color: #ff7043;
+        }
+
+        .change-arrow {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        /* 出典セクション */
+        .sources-section {
+            background: rgba(76, 175, 80, 0.1);
+            border-left: 4px solid #4caf50;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+            margin-bottom: 10px;
+        }
+
+        .sources-section h4 {
+            color: #4caf50;
+            font-size: 1em;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .source-link {
+            display: inline-block;
+            background: rgba(100, 181, 246, 0.2);
+            color: #64b5f6;
+            padding: 8px 15px;
+            border-radius: 20px;
+            text-decoration: none;
+            margin-right: 10px;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+            border: 1px solid #64b5f6;
+            transition: all 0.3s ease;
+        }
+
+        .source-link:hover {
+            background: rgba(100, 181, 246, 0.4);
+            transform: translateY(-2px);
         }
 
         /* MAIN CONTENT: ニュース記事 */
@@ -343,27 +387,27 @@
             <div class="token-item">
                 <div class="token-symbol">ONDO</div>
                 <div class="token-category">Treasury</div>
-                <div class="token-change">+12.5%</div>
+                <div class="token-change"><span class="change-arrow">⬆️</span> +12.5%</div>
             </div>
             <div class="token-item">
                 <div class="token-symbol">XDC</div>
                 <div class="token-category">Trade Finance</div>
-                <div class="token-change">+8.3%</div>
+                <div class="token-change"><span class="change-arrow">⬆️</span> +8.3%</div>
             </div>
             <div class="token-item">
                 <div class="token-symbol">MANTRA</div>
                 <div class="token-category">Infrastructure</div>
-                <div class="token-change">+5.7%</div>
+                <div class="token-change"><span class="change-arrow">⬆️</span> +5.7%</div>
             </div>
             <div class="token-item">
                 <div class="token-symbol">USDY</div>
                 <div class="token-category">Yield</div>
-                <div class="token-change">+3.2%</div>
+                <div class="token-change"><span class="change-arrow">⬆️</span> +3.2%</div>
             </div>
             <div class="token-item">
                 <div class="token-symbol">CENTRIFUGE</div>
                 <div class="token-category">Credit</div>
-                <div class="token-change">+2.1%</div>
+                <div class="token-change"><span class="change-arrow">⬆️</span> +2.1%</div>
             </div>
         </div>
 
@@ -453,6 +497,14 @@
 
                 <div class="article-timestamp">
                     発行日時: 2026年2月28日 09:11 JST
+                </div>
+
+                <!-- 出典セクション -->
+                <div class="sources-section">
+                    <h4>出典メディア</h4>
+                    <a href="https://blockworks.co" target="_blank" class="source-link">Blockworks</a>
+                    <a href="https://coindesk.com" target="_blank" class="source-link">CoinDesk</a>
+                    <a href="https://messari.io" target="_blank" class="source-link">Messari</a>
                 </div>
             </div>
         </div>
