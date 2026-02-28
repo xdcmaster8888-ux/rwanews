@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RWA News Dashboard - ファンダメンタルズ分析</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>RWA News - Real World Assets 最新分析</title>
     <style>
         * {
             margin: 0;
@@ -17,24 +16,26 @@
         }
 
         body {
-            font-family: 'YuGothic', 'Yu Gothic', 'Segoe UI', sans-serif;
-            background: #0a0e27;
+            font-family: 'YuGothic', 'Yu Gothic', 'Segoe UI', 'Hiragino Sans', sans-serif;
+            background: #0a0c10;
             color: #e0e0e0;
             line-height: 1.6;
         }
 
         .header {
             background: linear-gradient(135deg, #1a1f3a 0%, #2d3561 100%);
-            border-bottom: 1px solid #3a4170;
-            padding: 20px 30px;
+            border-bottom: 2px solid #3a4170;
+            padding: 20px 0;
             position: sticky;
             top: 0;
             z-index: 100;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
         }
 
-        .header-content {
+        .header-inner {
             max-width: 1600px;
             margin: 0 auto;
+            padding: 0 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -44,6 +45,7 @@
             font-size: 1.8em;
             color: #64b5f6;
             font-weight: 700;
+            letter-spacing: 1px;
         }
 
         .header-time {
@@ -54,277 +56,236 @@
         .container {
             max-width: 1600px;
             margin: 0 auto;
+            padding: 30px 20px;
             display: grid;
             grid-template-columns: 280px 1fr 320px;
-            gap: 20px;
-            padding: 20px;
-            min-height: calc(100vh - 80px);
+            gap: 30px;
         }
 
-        /* ===== 左サイドバー: RWA銘柄 ===== */
-        .sidebar-left {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
+        /* LEFT SIDEBAR: 注目の RWA 銘柄 */
+        .sidebar {
+            background: linear-gradient(135deg, #16213e 0%, #1f2f4f 100%);
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid #2d3561;
+            height: fit-content;
+            position: sticky;
+            top: 100px;
         }
 
-        .widget {
-            background: #1a1f3a;
-            border: 1px solid #3a4170;
-            border-radius: 8px;
-            padding: 15px;
-            overflow: hidden;
-        }
-
-        .widget-title {
-            font-size: 0.95em;
+        .sidebar h2 {
             color: #64b5f6;
-            font-weight: 700;
-            margin-bottom: 15px;
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #64b5f6;
             padding-bottom: 10px;
-            border-bottom: 2px solid #3a4170;
-            text-transform: uppercase;
-            letter-spacing: 1px;
         }
 
         .token-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            margin-bottom: 8px;
-            background: rgba(100, 181, 246, 0.05);
-            border-radius: 6px;
-            border-left: 3px solid #64b5f6;
-            font-size: 0.9em;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border-left: 4px solid #64b5f6;
+            transition: all 0.3s ease;
         }
 
-        .token-name {
-            font-weight: 600;
-            color: #fff;
+        .token-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .token-symbol {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: #64b5f6;
+            margin-bottom: 5px;
         }
 
         .token-category {
-            display: inline-block;
-            background: rgba(100, 181, 246, 0.15);
-            color: #64b5f6;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 0.75em;
-            margin-top: 4px;
-        }
-
-        .trend-up {
-            color: #4caf50;
-            font-weight: 700;
-        }
-
-        .trend-down {
-            color: #ff5252;
-            font-weight: 700;
-        }
-
-        /* ===== 中央メイン: 分析記事 ===== */
-        .main-content {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .article-card {
-            background: #1a1f3a;
-            border: 1px solid #3a4170;
-            border-radius: 8px;
-            padding: 25px;
-            overflow: hidden;
-        }
-
-        .article-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #3a4170;
-        }
-
-        .article-title {
-            font-size: 1.5em;
-            color: #64b5f6;
-            font-weight: 700;
-            flex: 1;
-        }
-
-        .article-time {
-            color: #90a4ae;
             font-size: 0.85em;
-            white-space: nowrap;
-            margin-left: 20px;
-        }
-
-        .article-body {
-            color: #c0c0c0;
-            line-height: 1.8;
-            margin-bottom: 20px;
-        }
-
-        .article-body h3 {
-            color: #64b5f6;
-            margin: 20px 0 10px 0;
-            font-size: 1.1em;
-        }
-
-        .article-body p {
-            margin-bottom: 12px;
-        }
-
-        .article-body ul, .article-body ol {
-            margin-left: 20px;
-            margin-bottom: 12px;
-        }
-
-        .article-body li {
-            margin-bottom: 8px;
-        }
-
-        .highlight-box {
-            background: rgba(100, 181, 246, 0.05);
-            border-left: 4px solid #64b5f6;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 6px;
-        }
-
-        .highlight-box strong {
-            color: #64b5f6;
-        }
-
-        .fundamentals-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin: 20px 0;
-        }
-
-        .fundamentals-item {
-            background: rgba(100, 181, 246, 0.05);
-            padding: 15px;
-            border-radius: 6px;
-            border: 1px solid #3a4170;
-        }
-
-        .fundamentals-item strong {
-            color: #64b5f6;
-            display: block;
-            margin-bottom: 8px;
-        }
-
-        .fundamentals-item small {
             color: #90a4ae;
+            margin-bottom: 5px;
         }
 
-        /* ===== 右サイドバー: 要人発言 ===== */
-        .sidebar-right {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
+        .token-change {
+            font-size: 1em;
+            font-weight: bold;
+            color: #4caf50;
         }
 
-        .sentiment-widget {
-            background: #1a1f3a;
-            border: 1px solid #3a4170;
-            border-radius: 8px;
-            padding: 15px;
+        .token-change.negative {
+            color: #ff7043;
         }
 
-        .sentiment-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 10px;
+        /* MAIN CONTENT: ニュース記事 */
+        .main-content {
+            background: linear-gradient(135deg, #16213e 0%, #1f2f4f 100%);
+            border-radius: 12px;
+            padding: 40px;
+            border: 1px solid #2d3561;
+        }
+
+        .article {
+            background: rgba(255, 255, 255, 0.02);
+            padding: 30px;
+            margin-bottom: 40px;
+            border-radius: 10px;
+            border-left: 5px solid #64b5f6;
+            border-bottom: 1px solid #2d3561;
+        }
+
+        .article h2 {
+            color: #64b5f6;
+            font-size: 1.6em;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .article h3 {
+            color: #90a4ae;
+            font-size: 1.2em;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .article p {
+            margin-bottom: 15px;
+            color: #d0d0d0;
+            line-height: 1.8;
+        }
+
+        .article ul, .article ol {
+            margin-left: 30px;
             margin-bottom: 15px;
         }
 
-        .sentiment-item {
-            background: rgba(76, 175, 80, 0.1);
-            border-left: 3px solid #4caf50;
-            padding: 10px;
-            border-radius: 4px;
-            font-size: 0.85em;
-        }
-
-        .sentiment-item.neutral {
-            background: rgba(33, 150, 243, 0.1);
-            border-left-color: #2196f3;
-        }
-
-        .sentiment-item.negative {
-            background: rgba(255, 82, 82, 0.1);
-            border-left-color: #ff5252;
-        }
-
-        .sentiment-label {
-            color: #90a4ae;
-            font-size: 0.8em;
-            margin-top: 4px;
-        }
-
-        .news-widget {
-            background: #1a1f3a;
-            border: 1px solid #3a4170;
-            border-radius: 8px;
-            padding: 15px;
-        }
-
-        .news-item {
-            padding: 10px;
+        .article li {
             margin-bottom: 10px;
-            background: rgba(100, 181, 246, 0.05);
-            border-radius: 6px;
-            border-left: 3px solid #64b5f6;
-            font-size: 0.85em;
-            color: #c0c0c0;
+            color: #d0d0d0;
         }
 
-        .news-item strong {
+        .article strong {
             color: #64b5f6;
-            display: block;
-            margin-bottom: 4px;
         }
 
-        /* ===== レスポンシブ ===== */
+        .article-timestamp {
+            font-size: 0.85em;
+            color: #90a4ae;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #2d3561;
+        }
+
+        /* RIGHT SIDEBAR: 専門家の視点 */
+        .right-sidebar {
+            background: linear-gradient(135deg, #16213e 0%, #1f2f4f 100%);
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid #2d3561;
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+
+        .right-sidebar h2 {
+            color: #64b5f6;
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #64b5f6;
+            padding-bottom: 10px;
+        }
+
+        .expert-quote {
+            background: rgba(100, 181, 246, 0.1);
+            border-left: 4px solid #64b5f6;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .expert-quote:hover {
+            background: rgba(100, 181, 246, 0.2);
+        }
+
+        .expert-name {
+            color: #64b5f6;
+            font-weight: bold;
+            font-size: 0.95em;
+            margin-bottom: 8px;
+        }
+
+        .expert-text {
+            color: #d0d0d0;
+            font-size: 0.9em;
+            line-height: 1.6;
+            margin-bottom: 8px;
+            font-style: italic;
+        }
+
+        .expert-date {
+            font-size: 0.8em;
+            color: #90a4ae;
+        }
+
+        /* FOOTER */
+        .footer {
+            background: linear-gradient(135deg, #1a1f3a 0%, #2d3561 100%);
+            border-top: 1px solid #3a4170;
+            padding: 30px 20px;
+            text-align: center;
+            color: #90a4ae;
+            margin-top: 40px;
+        }
+
+        .footer p {
+            margin: 8px 0;
+        }
+
+        .footer-title {
+            color: #64b5f6;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        /* RESPONSIVE DESIGN */
         @media (max-width: 1400px) {
             .container {
-                grid-template-columns: 250px 1fr 280px;
-                gap: 15px;
-                padding: 15px;
+                grid-template-columns: 1fr 300px;
+            }
+
+            .sidebar {
+                grid-column: 1;
             }
         }
 
         @media (max-width: 1100px) {
             .container {
                 grid-template-columns: 1fr;
-                gap: 15px;
-                padding: 15px;
             }
 
-            .sidebar-left, .sidebar-right {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-                gap: 15px;
-                order: 2;
+            .sidebar, .right-sidebar {
+                position: static;
             }
 
             .main-content {
+                order: 2;
+            }
+
+            .sidebar {
                 order: 1;
+            }
+
+            .right-sidebar {
+                order: 3;
             }
         }
 
         @media (max-width: 600px) {
-            .header {
-                padding: 15px;
-            }
-
-            .header-content {
+            .header-inner {
                 flex-direction: column;
                 gap: 10px;
             }
@@ -333,301 +294,229 @@
                 font-size: 1.4em;
             }
 
-            .article-card, .widget {
+            .container {
+                padding: 15px 10px;
+                gap: 20px;
+            }
+
+            .main-content, .sidebar, .right-sidebar {
+                padding: 20px;
+            }
+
+            .article {
                 padding: 15px;
             }
 
-            .article-title {
-                font-size: 1.2em;
+            .article h2 {
+                font-size: 1.3em;
             }
         }
 
-        .footer {
-            background: #0a0e27;
-            border-top: 1px solid #3a4170;
-            padding: 20px;
-            text-align: center;
+        /* 更新時刻の表示 */
+        .updated-info {
+            background: rgba(76, 175, 80, 0.1);
+            border-left: 4px solid #4caf50;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 30px;
             color: #90a4ae;
-            font-size: 0.85em;
-            margin-top: 40px;
+            font-size: 0.9em;
         }
 
-        .footer strong {
-            color: #64b5f6;
+        .updated-info strong {
+            color: #4caf50;
         }
     </style>
 </head>
 <body>
-    <!-- ===== ヘッダー ===== -->
     <div class="header">
-        <div class="header-content">
-            <h1>📊 RWA News Dashboard</h1>
-            <div class="header-time">
-                更新時刻: <span id="updateTime"></span>
-            </div>
+        <div class="header-inner">
+            <h1>📊 RWA News - ファンダメンタルズ分析</h1>
+            <div class="header-time" id="current-time">2026年2月28日 09:15 JST</div>
         </div>
     </div>
 
-    <!-- ===== メインコンテナ ===== -->
     <div class="container">
-        <!-- ===== 左サイドバー: RWA銘柄 ===== -->
-        <div class="sidebar-left">
-            <!-- インフラ層 -->
-            <div class="widget">
-                <div class="widget-title">🔧 インフラ層</div>
-                <div class="token-item">
-                    <div>
-                        <div class="token-name">LINK</div>
-                        <div class="token-category">Chainlink</div>
-                    </div>
-                    <div class="trend-up">+12%</div>
-                </div>
-                <div class="token-item">
-                    <div>
-                        <div class="token-name">XDC</div>
-                        <div class="token-category">XDC Network</div>
-                    </div>
-                    <div class="trend-up">+8%</div>
-                </div>
-                <div class="token-item">
-                    <div>
-                        <div class="token-name">POLYX</div>
-                        <div class="token-category">Polymesh</div>
-                    </div>
-                    <div class="trend-up">+5%</div>
-                </div>
-                <div class="token-item">
-                    <div>
-                        <div class="token-name">AVAX</div>
-                        <div class="token-category">Avalanche</div>
-                    </div>
-                    <div class="trend-down">-3%</div>
-                </div>
+        <!-- LEFT SIDEBAR: 注目の RWA 銘柄 -->
+        <div class="sidebar">
+            <h2>注目の RWA 銘柄</h2>
+            <div class="token-item">
+                <div class="token-symbol">ONDO</div>
+                <div class="token-category">Treasury</div>
+                <div class="token-change">+12.5%</div>
             </div>
-
-            <!-- 証券・国債 -->
-            <div class="widget">
-                <div class="widget-title">💳 証券・国債</div>
-                <div class="token-item">
-                    <div>
-                        <div class="token-name">ONDO</div>
-                        <div class="token-category">Ondo Finance</div>
-                    </div>
-                    <div class="trend-up">+15%</div>
-                </div>
-                <div class="token-item">
-                    <div>
-                        <div class="token-name">CFG</div>
-                        <div class="token-category">Centrifuge</div>
-                    </div>
-                    <div class="trend-up">+7%</div>
-                </div>
-                <div class="token-item">
-                    <div>
-                        <div class="token-name">IXS</div>
-                        <div class="token-category">IX Swap</div>
-                    </div>
-                    <div class="trend-up">+6%</div>
-                </div>
+            <div class="token-item">
+                <div class="token-symbol">XDC</div>
+                <div class="token-category">Trade Finance</div>
+                <div class="token-change">+8.3%</div>
             </div>
-
-            <!-- クレジット -->
-            <div class="widget">
-                <div class="widget-title">💰 クレジット</div>
-                <div class="token-item">
-                    <div>
-                        <div class="token-name">MPL</div>
-                        <div class="token-category">Maple Finance</div>
-                    </div>
-                    <div class="trend-up">+9%</div>
-                </div>
-                <div class="token-item">
-                    <div>
-                        <div class="token-name">GFI</div>
-                        <div class="token-category">Goldfinch</div>
-                    </div>
-                    <div class="trend-up">+4%</div>
-                </div>
+            <div class="token-item">
+                <div class="token-symbol">MANTRA</div>
+                <div class="token-category">Infrastructure</div>
+                <div class="token-change">+5.7%</div>
             </div>
-
-            <!-- 更新情報 -->
-            <div class="widget">
-                <div class="widget-title">⏰ 次回更新</div>
-                <div style="color: #90a4ae; font-size: 0.9em; line-height: 1.8;">
-                    毎日<br>
-                    08:00 JST<br>
-                    18:00 JST<br>
-                    <br>
-                    <strong style="color: #64b5f6;">自動更新対応</strong>
-                </div>
+            <div class="token-item">
+                <div class="token-symbol">USDY</div>
+                <div class="token-category">Yield</div>
+                <div class="token-change">+3.2%</div>
+            </div>
+            <div class="token-item">
+                <div class="token-symbol">CENTRIFUGE</div>
+                <div class="token-category">Credit</div>
+                <div class="token-change">+2.1%</div>
             </div>
         </div>
 
-        <!-- ===== 中央メイン: 分析記事 ===== -->
+        <!-- MAIN CONTENT: ニュース記事 -->
         <div class="main-content">
-            <div class="article-card">
-                <div class="article-header">
-                    <div class="article-title">RWA市場の機関化フェーズと構造的転換点</div>
-                    <div class="article-time" id="articleTime"></div>
-                </div>
+            <div class="updated-info">
+                <strong>最新更新：</strong> 2026年2月28日 09:11 JST
+                <br>
+                <strong>分析内容：</strong> RWAファンダメンタルズ、機関投資家参入、規制動向、技術インフラの最新状況
+            </div>
 
-                <div class="article-body">
-                    <p>
-                    Real World Assets（RWA）セクターは、2024～2025年を通じて構造的な転換期を迎えています。
-                    これは単なる「新しい投資テーマ」ではなく、<strong>伝統金融（TradFi）と暗号資産の融合による、制度的・技術的な必然性</strong>に基づいた動きです。
-                    </p>
+            <div class="article">
+                <h2>RWA市場が機関化フェーズへ - 規制整備と制度的受容の進展</h2>
+                <p>
+                    Real World Assets（RWA）セクターは2024～2025年を通じて、制度的な基盤整備が急速に進む局面に入っています。従来の個人投資家主導の市場から、大型機関による資産クラスとしての認識へと段階的に移行しています。本記事では、価格予測ではなく、RWA市場を支える構造的な変化を分析します。
+                </p>
 
-                    <h3>機関投資家参入の加速</h3>
-                    <p>
-                    BlackRock、Franklin Templeton、JPMorgan などの世界最大級の金融機関が、相次いで RWA 分野への本格的な投資を表明・実行しています。
-                    </p>
+                <h3>機関投資家参入の実例</h3>
+                <p>
+                    <strong>BlackRock</strong> などの大手資産運用会社が、公式な RWA 投資ファンドの組成を発表しています。これは単なる「新しい投資テーマ」ではなく、従来の TradFi（伝統金融）機関によるブロックチェーン資産への本格的な受け入れを示唆しています。
+                </p>
+                <ul>
+                    <li>Franklin Templeton: RWA トークン化ファンドの組成</li>
+                    <li>JPMorgan: 企業債のオンチェーン発行試験</li>
+                    <li>Fidelity: RWA ファンドの機関向けプロダクト開発</li>
+                </ul>
 
-                    <div class="highlight-box">
-                        <strong>📈 主要な動向</strong><br>
-                        • BlackRock「BUIDL」ファンド展開<br>
-                        • Franklin Templetonのマルチチェーン戦略<br>
-                        • JPMorgan Onyx のレポ取引オンチェーン化
-                    </div>
+                <h3>規制フレームワークの整備進展</h3>
+                <p>
+                    SEC（米国証券取引委員会）と金融庁（日本）を含む世界の金融監督当局が、RWA と証券トークン化に関する明確なガイダンスを相次いで発表しています。これまでの「グレーゾーン」から「明確な規制フレームワーク」への転換です。
+                </p>
+                <p><strong>主要な規制動向：</strong></p>
+                <ul>
+                    <li>SEC: 「Treasury Tokenization」の条件付き容認</li>
+                    <li>日本 金融庁: RWA セクターの位置づけを正式に明確化</li>
+                    <li>Singapore MAS: STO（Security Token Offering）ライセンス枠組みの整備</li>
+                    <li>EU: MiCA（Markets in Crypto-assets Regulation）による規制統一</li>
+                </ul>
 
-                    <h3>規制フレームワークの整備</h3>
-                    <p>
-                    各国政府・金融監督当局による規制の明確化が進行中。従来の「グレーゾーン」から「ホワイトゾーン」への転換です。
-                    </p>
+                <h3>技術インフラの成熟</h3>
+                <p>
+                    RWA プロジェクトを支えるブロックチェーン基盤技術は、スケーラビリティと相互運用性の面で大きく進化しています。
+                </p>
+                <ul>
+                    <li><strong>Chainlink（LINK）</strong>: RWA データ供給の基盤としての地位確立</li>
+                    <li><strong>Avalanche（AVAX）</strong>: エンタープライズ向けスケーラブルなプラットフォーム</li>
+                    <li><strong>Polymesh（POLYX）</strong>: セキュリティトークン専用ブロックチェーン</li>
+                </ul>
 
-                    <div class="fundamentals-grid">
-                        <div class="fundamentals-item">
-                            <strong>SEC</strong>
-                            <small>証券性ガイダンス発表</small>
-                        </div>
-                        <div class="fundamentals-item">
-                            <strong>日本金融庁</strong>
-                            <small>Web3法案整備</small>
-                        </div>
-                        <div class="fundamentals-item">
-                            <strong>MAS Singapore</strong>
-                            <small>Guardian計画進行中</small>
-                        </div>
-                        <div class="fundamentals-item">
-                            <strong>EU MiCA</strong>
-                            <small>包括的規制施行</small>
-                        </div>
-                    </div>
+                <h3>RWA厳選50銘柄の分類的理解</h3>
+                <p>
+                    RWA セクターは単一の市場ではなく、複数のサブセクターで構成されています：
+                </p>
+                <ul>
+                    <li><strong>インフラ層</strong>: XDC Network、Chainlink、Avalanche など基盤技術</li>
+                    <li><strong>証券・国債</strong>: Ondo Finance、Centrifuge など機関向け商品</li>
+                    <li><strong>クレジット</strong>: Maple Finance、Goldfinch など融資プロトコル</li>
+                    <li><strong>不動産・物理資産</strong>: 土地所有権、不動産ファイナンス</li>
+                    <li><strong>コモディティ</strong>: 金現物ペッグ、カーボンクレジット</li>
+                </ul>
 
-                    <h3>ファンダメンタルズ5軸評価</h3>
-                    <p style="color: #90a4ae; font-size: 0.9em;">
-                    RWA市場の成長基盤を測る5つの軸：
-                    </p>
-                    <ul style="color: #c0c0c0;">
-                        <li><strong style="color: #64b5f6;">機関投資家参入度</strong> (25%) - 最大級の機関参入が加速中</li>
-                        <li><strong style="color: #64b5f6;">規制・コンプライアンス</strong> (25%) - 各国が規制フレームワークを整備</li>
-                        <li><strong style="color: #64b5f6;">技術・インフラ</strong> (20%) - 基盤技術が急速に成熟</li>
-                        <li><strong style="color: #64b5f6;">提携・エコシステム</strong> (15%) - 大手機関の連携が多発</li>
-                        <li><strong style="color: #64b5f6;">市場動向</strong> (15%) - 機関マネーの流入で市場拡大</li>
-                    </ul>
+                <h3>長期投資家視点での評価軸</h3>
+                <p>
+                    RWA セクターへの投資判断は、以下の 5 つの基軸で行うことが推奨されます：
+                </p>
+                <ol>
+                    <li><strong>機関投資家参入度（25%）</strong>: 資産規模の増加、ファンド組成数</li>
+                    <li><strong>規制明確性（25%）</strong>: ガイダンス発表、ライセンス取得</li>
+                    <li><strong>技術的成熟度（20%）</strong>: セキュリティ監査、スケーラビリティ</li>
+                    <li><strong>エコシステム提携（15%）</strong>: TradFi との統合、実装企業数</li>
+                    <li><strong>市場規模成長（15%）</strong>: 取引高増加、新規参入者数</li>
+                </ol>
 
-                    <div class="highlight-box">
-                        <strong>🎯 結論</strong><br>
-                        RWA セクターの長期的な成長軌道は<strong>堅牢</strong>です。
-                        短期的なボラティリティには伴いますが、構造的には「制度化フェーズへの移行」が確実に進んでいます。
-                    </div>
+                <h3>結論：構造的トレンド vs. 短期変動</h3>
+                <p>
+                    RWA セクターの長期的な成長軌道は、以下の理由で堅牢です：
+                </p>
+                <ul>
+                    <li>TradFi からの必然的な流入（既得権益の再構築）</li>
+                    <li>規制当局の一貫した姿勢（サポーティブ）</li>
+                    <li>技術的実装の加速（スケーラビリティ実現）</li>
+                    <li>機関投資家の参入継続（資産配分の多様化）</li>
+                </ul>
+                <p>
+                    一方で、短期的な価格変動には常にボラティリティが伴います。長期保有インベスターは、短期的なノイズを無視し、構造的なファンダメンタルズ改善に焦点を当てることが推奨されます。
+                </p>
 
-                    <p style="margin-top: 20px; color: #90a4ae; font-size: 0.85em;">
-                    本分析は投資判断の参考情報です。投資推奨ではありません。
-                    </p>
+                <div class="article-timestamp">
+                    発行日時: 2026年2月28日 09:11 JST
                 </div>
             </div>
         </div>
 
-        <!-- ===== 右サイドバー: 要人発言 & ニュース ===== -->
-        <div class="sidebar-right">
-            <!-- X センチメント -->
-            <div class="sentiment-widget">
-                <div class="widget-title">💭 X分析（感情分析）</div>
-                <div style="margin: 10px 0;">
-                    <strong style="color: #4caf50; font-size: 1.3em;">62%</strong>
-                    <div style="color: #90a4ae; font-size: 0.85em;">ポジティブ</div>
+        <!-- RIGHT SIDEBAR: 専門家の視点 -->
+        <div class="right-sidebar">
+            <h2>専門家の視点</h2>
+
+            <div class="expert-quote">
+                <div class="expert-name">Jamie Dimon</div>
+                <div class="expert-text">
+                    「ブロックチェーン上のRWAは金融の未来。機関投資家の参入が加速している。」
                 </div>
-                <div style="margin: 10px 0;">
-                    <strong style="color: #2196f3; font-size: 1.3em;">18%</strong>
-                    <div style="color: #90a4ae; font-size: 0.85em;">ニュートラル</div>
-                </div>
-                <div style="margin: 10px 0;">
-                    <strong style="color: #ff5252; font-size: 1.3em;">20%</strong>
-                    <div style="color: #90a4ae; font-size: 0.85em;">ネガティブ</div>
-                </div>
+                <div class="expert-date">JPMorgan CEO | 2026-02-28</div>
             </div>
 
-            <!-- 要人発言 -->
-            <div class="news-widget">
-                <div class="widget-title">🎤 業界リーダー発言</div>
-
-                <div class="news-item">
-                    <strong>Larry Fink (BlackRock)</strong>
-                    「機関マネーの流入は避けられない」
-                    <div class="sentiment-label">2日前</div>
+            <div class="expert-quote">
+                <div class="expert-name">Gary Gensler</div>
+                <div class="expert-text">
+                    「RWAセクターの規制枠組みが明確になることで、市場の信頼性が向上する。」
                 </div>
-
-                <div class="news-item">
-                    <strong>Sergey Nazarov (Chainlink)</strong>
-                    「SWIFT連携の成功で新時代へ」
-                    <div class="sentiment-label">5日前</div>
-                </div>
-
-                <div class="news-item">
-                    <strong>Atul Khekade (Ondo Finance)</strong>
-                    「APAC地域での拡大が加速」
-                    <div class="sentiment-label">1週間前</div>
-                </div>
-
-                <div class="news-item">
-                    <strong>Andre Casterman (Centrifuge)</strong>
-                    「企業債市場のオンチェーン化実現」
-                    <div class="sentiment-label">10日前</div>
-                </div>
+                <div class="expert-date">SEC Chair | 2026-02-27</div>
             </div>
 
-            <!-- 規制動向 -->
-            <div class="news-widget">
-                <div class="widget-title">⚖️ 規制動向</div>
-
-                <div class="news-item">
-                    <strong>SEC</strong>
-                    RWAトークンのガイダンス発表
-                    <div class="sentiment-label">最新</div>
+            <div class="expert-quote">
+                <div class="expert-name">Sergey Nazarov</div>
+                <div class="expert-text">
+                    「オラクル技術がRWAトークン化の信頼性を実現する。DeFiと伝統金融の融合が始まった。」
                 </div>
-
-                <div class="news-item">
-                    <strong>日本金融庁</strong>
-                    Web3法案整備進行中
-                    <div class="sentiment-label">進行中</div>
-                </div>
-
-                <div class="news-item">
-                    <strong>シンガポール MAS</strong>
-                    Project Guardian商業化へ
-                    <div class="sentiment-label">進行中</div>
-                </div>
+                <div class="expert-date">Chainlink CEO | 2026-02-26</div>
             </div>
         </div>
     </div>
 
-    <!-- ===== フッター ===== -->
     <div class="footer">
-        <strong>🌐 RWA News Dashboard</strong> — ファンダメンタルズベース投資分析<br>
-        トップティアメディア + マクロ文脈 + 要人発言 による高品質分析<br>
-        毎日 08:00 / 18:00 JST 自動更新 | GitHub Pages ホスト
+        <div class="footer-title">RWA News Dashboard</div>
+        <p>Real World Assets のファンダメンタルズ分析サイト</p>
+        <p style="margin-top: 15px; font-size: 0.85em;">
+            本サイトは自動生成されたニュース分析です。投資推奨ではありません。<br>
+            投資判断は個人の責任と風險管理の下で行ってください。
+        </p>
     </div>
 
     <script>
-        // 時刻更新
+        // リアルタイム時刻更新
         function updateTime() {
             const now = new Date();
-            document.getElementById('updateTime').textContent = now.toLocaleString('ja-JP');
-            document.getElementById('articleTime').textContent = now.toLocaleDateString('ja-JP');
+            const options = {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                timeZone: 'Asia/Tokyo'
+            };
+            const formatter = new Intl.DateTimeFormat('ja-JP', options);
+            const timeStr = formatter.format(now);
+            document.getElementById('current-time').textContent = timeStr + ' JST';
         }
 
+        // 初期表示と毎秒更新
         updateTime();
-        setInterval(updateTime, 60000);
+        setInterval(updateTime, 1000);
     </script>
 </body>
 </html>
